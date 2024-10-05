@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: "en-US" }}">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
+    {% seo title=false %}
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="{{ "/static/style.css?v=" | append: site.github.build_revision }}">
+    <!-- Custom Head -->
+    {% include head-custom.html %}
+  </head>
+  <body>
+    <!-- Menu checkbox (for CSS only menu) -->
+    <input id="menu-checkbox" class="menu-checkbox" type="checkbox"></input>
+
+    <!-- Header -->
+    <div class="page-header">
+      {% include header.html %}
+    </div>
+
+    <!-- Body -->
+    <div class="container-xl page-body">
+      <div class="d-flex">
+        <div class="hide-sm hide-md page-sidebar">
+          {% include sidebar.html %}
+        </div>
+        <div class="d-flex flex-column flex-auto page-main">
+          <main class="flex-auto markdown-body page-content">
+            {% if page.header != false and page.title %}
+              <h1>{{ page.title_long | default: page.title }}</h1>
+            {% endif %}
+            {{ content }}
+          </main>
+          <div class="page-footer">
+            {% include footer.html %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Anchor links -->
+    <script src="{{ "/static/anchor.min.js?v=" | append: site.github.build_revision | relative_url }}"></script>
+    <script>anchors.add(".page-content h1, .page-content h2, .page-content h3, .page-content h4, .page-content h5, .page-content h6");</script>
+  </body>
+</html>
