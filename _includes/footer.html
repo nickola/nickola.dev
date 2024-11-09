@@ -1,0 +1,8 @@
+<footer class="Header">
+  <div class="Header-item Header-item--full flex-justify-end footer-copyright">
+    <a href="{{ site.copyright.link | default: site.url }}" target="_blank" class="Header-link">
+      &copy; {{ site.time | date: '%Y' }}
+      {% if site.copyright.name or site.name %}{{ site.copyright.name | default: site.name }}{% endif %}
+    </a>
+  </div>
+</footer>

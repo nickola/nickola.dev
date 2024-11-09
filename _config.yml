@@ -1,0 +1,36 @@
+name: "@nickola"
+title: "@nickola &mdash; Nickolay Kovalev"
+description: My name is Nickolay, I am a Software Architect, DevOps and Developer.
+
+copyright:
+  name: Nickolay Kovalev
+  link: https://github.com/nickola
+
+markdown: kramdown
+
+plugins:
+  - jekyll-sitemap
+  - jekyll-redirect-from
+
+sections:
+ - Projects
+ - Images
+ - DevOps
+ - Programming
+ - Tools
+ - Other
+
+collections:
+  pages:
+    output: true
+    permalink: /:path
+
+# Exclude from "_site"
+exclude:
+  - "*.code-workspace"
+  - Makefile
+  - static/components
+  - node_modules
+  - Gemfile*
+  - package*.json
+  - webpack*.js

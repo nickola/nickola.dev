@@ -1,0 +1,13 @@
+<!-- Components -->
+{%- if page.javascript_components -%}
+  {% for file in page.javascript_components %}
+    <script src="/static-build/components/{{ file }}?v={{ site.github.build_revision }}"></script>
+  {% endfor %}
+{%- endif -%}
+<!-- Google -->
+<script src="https://www.googletagmanager.com/gtag/js?id=G-02NB5S7732" async></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date()); gtag('config', 'G-02NB5S7732');
+</script>

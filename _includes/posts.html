@@ -1,0 +1,46 @@
+{% if include.posts %}
+<div class="posts">
+{% for item in include.posts %}
+  {% assign continue = true %}
+
+  {% if include.where_tags != nil %}
+    {% assign continue = false %}
+    {% if item.tags %}
+      {% assign continue = true %}
+      {% assign where_tags = include.where_tags | split: "," %}
+      {% for where_tag in where_tags %}
+        {% unless item.tags contains where_tag %}{% assign continue = false %}{% endunless %}
+      {% endfor %}
+    {% endif %}
+  {% endif %}
+
+  {% if continue == true and item.tags != nil and include.where_not_tags != nil %}
+    {% assign where_not_tags = include.where_not_tags | split: "," %}
+    {% for where_not_tag in where_not_tags %}
+      {% if item.tags contains where_not_tag %}{% assign continue = false %}{% endif %}
+    {% endfor %}
+  {% endif %}
+
+  {% if continue == true %}
+  <div class="post">
+    <div class="post-header">
+      <h2 class="post-title">{{ item.title }}</h2>
+      <div class="hide-sm post-details">
+        {% if item.tags %}
+        <div class="hide-sm hide-md hide-lg post-tags">
+          {% for tag in item.tags %} <span class="post-tag">#{{ tag }}</span>{% endfor %}
+        </div>
+        {% endif %}
+        <div class="post-date">{{ item.date }}</div>
+      </div>
+    </div>
+    <div class="post-image">
+      {% for image in item.images %}
+        <img src="/static/images/{{ image }}" alt="{{ item.title }}{% if item.tags %} ({{ item.tags | join: ", " }}){% endif %}">
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+{% endfor %}
+</div>
+{% endif %}
