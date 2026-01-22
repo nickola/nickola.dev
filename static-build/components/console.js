@@ -1,0 +1,1 @@
+document.addEventListener("keydown",(e=>{if("`"===e.key||"~"===e.key){const e=document.getElementById("console");e&&e.classList.toggle("open")}}));

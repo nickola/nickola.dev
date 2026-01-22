@@ -1,0 +1,17 @@
+# Exclude directories starting with "_" (global ignore)
+!/_*/
+
+# VS Code
+/*.code-workspace
+
+# Ruby / Jekyll
+/Gemfile.lock
+/.bundle/
+/_site/
+
+# Node
+/node_modules/
+/package-lock.json
+
+# macOS
+.ds_store
