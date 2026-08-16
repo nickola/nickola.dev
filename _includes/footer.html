@@ -1,0 +1,8 @@
+<footer class="Header">
+  <div class="Header-item Header-item--full flex-justify-end">
+    &copy; {{ site.time | date: '%Y' }}&nbsp;
+    <a href="mailto:{{ site.footer.email }}" class="Header-link">
+      {% if site.footer.name or site.name %}{{ site.footer.name | default: site.name }}{% endif %}
+    </a>
+  </div>
+</footer>

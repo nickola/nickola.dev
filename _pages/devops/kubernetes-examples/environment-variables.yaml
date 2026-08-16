@@ -1,0 +1,162 @@
+# This example shows how to add environment variables to container from ConfigMap, Secret and
+# downwards API (node: name and IP; pod: namespace, name and IP; resources: requests and limits).
+
+# ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-environment-all
+data:
+  CONFIG_VARIABLE1: config-value1
+  CONFIG_VARIABLE2: config-value2
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-environment-custom
+data:
+  config_custom_variable1: config-custom-value1
+  config_custom_variable2: config-custom-value2
+---
+# Secret
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: secret-environment-all
+data:
+  SECRET_VARIABLE1: c2VjcmV0LXZhbHVlMQ==
+  SECRET_VARIABLE2: c2VjcmV0LXZhbHVlMg==
+---
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: secret-environment-custom
+data:
+  secret_custom_variable1: c2VjcmV0LWN1c3RvbS12YWx1ZTE=
+  secret_custom_variable2: c2VjcmV0LWN1c3RvbS12YWx1ZTI=
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: environment-variables
+spec:
+  selector:
+    matchLabels:
+      app: environment-variables
+  template:
+    metadata:
+      labels:
+        app: environment-variables
+    spec:
+      # Don't wait (SIGTERM) just kill (SIGKILL)
+      terminationGracePeriodSeconds: 0
+      containers:
+        - name: alpine
+          image: alpine:latest
+          command: ["/bin/sh", "-c", "--"]
+          args:
+            - >
+              while true; do
+                now=$(TZ=UTC date +"%Y-%m-%d %H:%M:%S UTC");
+
+                echo "--";
+                echo "Time: ${now}";
+
+                echo "NODE_NAME: $NODE_NAME, NODE_IP: $NODE_IP";
+                echo "POD_NAMESPACE: $POD_NAMESPACE, POD_NAME: $POD_NAME, POD_IP: $POD_IP";
+                echo "SERVICE_ACCOUNT: $SERVICE_ACCOUNT";
+
+                echo "REQUESTS_CPU: $REQUESTS_CPU, REQUESTS_MEMORY: $REQUESTS_MEMORY"
+                echo "LIMITS_CPU: $LIMITS_CPU, LIMITS_MEMORY: $LIMITS_MEMORY";
+
+                echo "CONFIG_VARIABLE1: $CONFIG_VARIABLE1, CONFIG_VARIABLE2: $CONFIG_VARIABLE2";
+                echo "CONFIG_CUSTOM_VARIABLE1: $CONFIG_CUSTOM_VARIABLE1"
+                echo "CONFIG_CUSTOM_VARIABLE2: $CONFIG_CUSTOM_VARIABLE2";
+
+                echo "SECRET_VARIABLE1: $SECRET_VARIABLE1, SECRET_VARIABLE2: $SECRET_VARIABLE2";
+                echo "SECRET_CUSTOM_VARIABLE1: $SECRET_CUSTOM_VARIABLE1"
+                echo "SECRET_CUSTOM_VARIABLE2: $SECRET_CUSTOM_VARIABLE2";
+
+                sleep 5;
+              done
+          env:
+            # Downwards API (see: https://kubernetes.io/docs/concepts/workloads/pods/downward-api/)
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: SERVICE_ACCOUNT
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.serviceAccountName
+            - name: REQUESTS_CPU
+              valueFrom:
+                resourceFieldRef:
+                  resource: requests.cpu
+            - name: REQUESTS_MEMORY
+              valueFrom:
+                resourceFieldRef:
+                  resource: requests.memory
+            - name: LIMITS_CPU
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.cpu
+            - name: LIMITS_MEMORY
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.memory
+            # Config (custom)
+            - name: CONFIG_CUSTOM_VARIABLE1
+              valueFrom:
+                configMapKeyRef:
+                  name: config-environment-custom
+                  key: config_custom_variable1
+            - name: CONFIG_CUSTOM_VARIABLE2
+              valueFrom:
+                configMapKeyRef:
+                  name: config-environment-custom
+                  key: config_custom_variable2
+            # Secret (custom)
+            - name: SECRET_CUSTOM_VARIABLE1
+              valueFrom:
+                secretKeyRef:
+                  name: secret-environment-custom
+                  key: secret_custom_variable1
+            - name: SECRET_CUSTOM_VARIABLE2
+              valueFrom:
+                secretKeyRef:
+                  name: secret-environment-custom
+                  key: secret_custom_variable2
+          envFrom:
+            # Config (all)
+            - configMapRef:
+                name: config-environment-all
+            # Secret (all)
+            - secretRef:
+                name: secret-environment-all
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 100m
+              memory: 256Mi
